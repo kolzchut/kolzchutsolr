@@ -1,0 +1,41 @@
+<dataConfig>
+        <dataSource type="FileDataSource" encoding="UTF-8" />
+        <document>
+        <entity name="page"
+                processor="XPathEntityProcessor"
+                stream="true"
+                forEach="/mediawiki/page/"
+                url="/work/kol/solr/dump_current.xml"
+                transformer="RegexTransformer,DateFormatTransformer"
+                >
+            <field column="id"        xpath="/mediawiki/page/id" />
+            <field column="title"     xpath="/mediawiki/page/title" />
+            <field column="revision"  xpath="/mediawiki/page/revision/id" />
+            <field column="user"      xpath="/mediawiki/page/revision/contributor/username" />
+            <field column="userId"    xpath="/mediawiki/page/revision/contributor/id" />
+            <field column="textString"      xpath="/mediawiki/page/revision/text" />
+
+            <field column="splitsLinks_ss"   splitBy="(?=(\[\[))" sourceColName="textString"/>
+            <field column="links_ss"    regex="(?imsu)\[\[([^\[\]]+)\]\]" sourceColName="splitsLinks_ss"/>
+            <field column="linksNoName_ss"    regex="(?iu)\s*([^|]+)\s*" sourceColName="links_ss"/>
+            <field column="category_ss"    regex="(?iu)קטגוריה\s*:\s*(.+?)\s*$" sourceColName="linksNoName_ss"/>
+            <field column="link_ss"    regex="(?iu)([^:]+:)?\s*(.+?)\s*$" sourceColName="linksNoName_ss"/>
+
+            <field column="splitsInfobox_ss"   splitBy="(?=(\{\{))" sourceColName="textString"/>
+            <field column="infobox_ss"    regex="(?imsu)\{\{([^\{\}]*)\}\}" sourceColName="splitsInfobox_ss"/>
+            <field column="fields_ss"    splitBy="(?imsu)\s*\|\s*" sourceColName="infobox_ss"/>
+            <field column="alltypes_txt"    regex="(?iu)(.+)\s*\=\s*" sourceColName="fields_ss"/>
+            <field column="types_txt"    regex="(?iu)(.+)\s*\=\s*.+" sourceColName="fields_ss"/>
+            <field column="values_txt"    regex="(?iu).+\s*\=\s*(.+)" sourceColName="fields_ss"/>
+
+            <field column="name_txt"  regex="(?iu)שם\s*\=\s*(.+)" sourceColName="fields_ss" />
+            <field column="minister_txt"  regex="(?iu)\bשר\b[^\=]*\=\s*(.+)" sourceColName="fields_ss" />
+            <field column="info_txt"  regex="(?iu)\bמידע\d?\b[^\=]*\=\s*(.+)" sourceColName="fields_ss" />
+            <field column="important_txt"  regex="(?iu)\bחשוב\d?\b[^\=]*\=\s*(.+)" sourceColName="fields_ss" />
+            <field column="compensation_txt"  regex="(?iu)\bפיצוי\d?\b[^\=]*\=\s*(.+)" sourceColName="fields_ss" />
+
+            <field column="timestamp" xpath="/mediawiki/page/revision/timestamp" dateTimeFormat="yyyy-MM-dd'T'hh:mm:ss'Z'" />
+            <field column="$skipDoc"  regex="^#REDIRECT .*" replaceWith="true" sourceColName="text"/>
+       </entity>
+        </document>
+</dataConfig>
