@@ -10,15 +10,26 @@
                 >
             <field column="id"        xpath="/mediawiki/page/id" />
             <field column="title"     xpath="/mediawiki/page/title" />
+            <field column="title_s"     xpath="/mediawiki/page/title" />
+            <field column="cleantitle_s"     regex="(?imsu)(קטגוריה\:)" replaceWith="" sourceColName="title_s" />
+            <field column="categorytitle_s"     regex="(?imsu)קטגוריה\:(.*)" sourceColName="title_s" />
+            <field column="cleantitle_t"     regex="(?imsu)(קטגוריה\:)" replaceWith="" sourceColName="title_s" />
             <field column="revision"  xpath="/mediawiki/page/revision/id" />
             <field column="user"      xpath="/mediawiki/page/revision/contributor/username" />
             <field column="userId"    xpath="/mediawiki/page/revision/contributor/id" />
             <field column="textString"      xpath="/mediawiki/page/revision/text" />
 
+            <field column="cleantext_t" regex="(?iu)(&lt;\!\-\-[^&gt;]*\-\-&gt;|\[\[|(\|[^\]]*)?\]\]|[\=']{2,}|\&lt;[/]?\w+\&gt;|\&lt;[\w\s]+/\&gt;|\{\{|\}\}|\||\[[^\s\[\]]+(\s+)?|[\[\]])" replaceWith=" " sourceColName="textString"/>
+            <field column="summary_s" regex="(?imsu)\{\{תקציר\}\}(.+)\{\{תקציר/סיום\}\}" sourceColName="textString"/>
+            <field column="summary_t" regex="(?iu)(&lt;\!\-\-[^&gt;]*\-\-&gt;|\{\{סוג\s+ערך[^\}]*\}\}|\[\[|(\|[^\]]*)?\]\]|[\=']{2,}|\&lt;[/]?\w+\&gt;|\&lt;[\w\s]+/\&gt;|\{\{|\}\}|\[[^\s\[\]]+(\s+)?|[\[\]]|\|([^\=]*=)?)" replaceWith=" "  sourceColName="summary_s"/>
+
+            <field column="namespace_i"      xpath="/mediawiki/page/ns" />
+
             <field column="splitsLinks_ss"   splitBy="(?=(\[\[))" sourceColName="textString"/>
             <field column="links_ss"    regex="(?imsu)\[\[([^\[\]]+)\]\]" sourceColName="splitsLinks_ss"/>
             <field column="linksNoName_ss"    regex="(?iu)\s*([^|]+)\s*" sourceColName="links_ss"/>
             <field column="category_ss"    regex="(?iu)קטגוריה\s*:\s*(.+?)\s*$" sourceColName="linksNoName_ss"/>
+            <field column="category_txt"    regex="(.*)" sourceColName="category_ss"/>
             <field column="link_ss"    regex="(?iu)([^:]+:)?\s*(.+?)\s*$" sourceColName="linksNoName_ss"/>
 
             <field column="splitsInfobox_ss"   splitBy="(?=(\{\{))" sourceColName="textString"/>
@@ -28,6 +39,12 @@
             <field column="types_txt"    regex="(?iu)(.+)\s*\=\s*.+" sourceColName="fields_ss"/>
             <field column="values_txt"    regex="(?iu).+\s*\=\s*(.+)" sourceColName="fields_ss"/>
 
+            <field column="seealso_infoboxes_ss"  regex="(?iu)ראו\s*גם\s*(.+)" sourceColName="infobox_ss" />
+            <field column="seealso_splitted_ss"   splitBy="(?imsu)\s*\|\s*" sourceColName="seealso_infoboxes_ss" />
+            <field column="seealso_ss" regex="(?imsu)\[\[\s*([^\[\]]+?)\s*\]\]" sourceColName="seealso_splitted_ss"/>
+           
+            <field column="entrytype_ss"  regex="(?iu)סוג\s*ערך\s*\|\s*(.+?)\s*$" sourceColName="infobox_ss" />
+ 
             <field column="name_txt"  regex="(?iu)שם\s*\=\s*(.+)" sourceColName="fields_ss" />
             <field column="minister_txt"  regex="(?iu)\bשר\b[^\=]*\=\s*(.+)" sourceColName="fields_ss" />
             <field column="info_txt"  regex="(?iu)\bמידע\d?\b[^\=]*\=\s*(.+)" sourceColName="fields_ss" />
