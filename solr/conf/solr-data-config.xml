@@ -5,7 +5,7 @@
                 processor="XPathEntityProcessor"
                 stream="true"
                 forEach="/mediawiki/page/"
-                url="/work/kol/solr/dump_current.xml"
+                url="/work/dump_current.xml"
                 transformer="RegexTransformer,DateFormatTransformer"
                 >
             <field column="id"        xpath="/mediawiki/page/id" />
